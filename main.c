@@ -6,11 +6,18 @@
 
 int main(){
     char input;
+    int num_of_nodes = 0;
+    int *pgraph = 0;
     while(scanf("%c", &input)!=EOF){
         switch (input)
         {
         case 'A':{ // Creating a new graph
-            /* code */
+            if(pgraph != NULL)
+            {
+                free_graph(pgraph);
+            }
+            scanf("%c", &num_of_nodes);
+            build_graph_cmd(pgraph, num_of_nodes);
             break;
         }
         case 'n':{ // Creating a new node
