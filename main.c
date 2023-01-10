@@ -14,14 +14,27 @@ int main(){
         case 'A':{ // Creating a new graph
             if(pgraph != NULL)
             {
-                free_graph(pgraph);
+                free_graph(&pgraph);
             }
-            scanf("%c", &num_of_nodes);
-            build_graph_cmd(pgraph, num_of_nodes);
+            scanf("%d", &num_of_nodes);
+            build_graph_cmd(&pgraph, num_of_nodes);
             break;
         }
         case 'n':{ // Creating a new node
-            /* code */
+            int start_node;
+            int weight;
+            int node_to_link;
+            int num;
+            // after the 'n' sign the number of the source node will come, we set it as the start node.
+            scanf("%d", &start_node);
+            // run over all the nodes after the first node to connect the necessary nodes to the source
+            // node and put the right weight for each edge.
+            while (scanf("%d", &num))
+            {
+                node_to_link = num;
+                scanf("%d", &weight);
+                make_edge(&pgraph, start_node, node_to_link, weight);
+            }
             break;
         }
         case 'B':{ // Adding a new node if not allready exist in the graph
