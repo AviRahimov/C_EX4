@@ -12,6 +12,8 @@ typedef struct edge_ {
 
 typedef struct GRAPH_NODE_ {
     int node_num;
+    int visited;
+    int distances;
     pedge edges;
     struct GRAPH_NODE_ *next;
 } node, *pnode;
@@ -19,7 +21,7 @@ typedef struct GRAPH_NODE_ {
 void free_graph(pnode *head);
 void build_graph_cmd(pnode *head, int num_of_nodes);
 void insert_node_cmd(pnode *head, int n);
-void delete_node_cmd(pnode *head);
+void delete_node_cmd(pnode *head, int node_to_delete);
 void printGraph_cmd(pnode head); //for self debug
 void deleteGraph_cmd(pnode* head);
 void shortsPath_cmd(pnode head);
