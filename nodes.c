@@ -5,8 +5,32 @@
 
 void free_graph(pnode *head)
 {
-
+    if(head == NULL){
+        return;
+    }
+    pnode curr_node = *head;
+    while (curr_node)
+    {
+        pnode next_node = curr_node->next;
+        free_edges(&curr_node);
+        free(curr_node);
+        curr_node = next_node;
+    }
+    printf("finished the func\n");
 }
+
+void free_edges(pnode *n) {
+    if (n == NULL) {
+        return;
+    }
+    pedge curr_e = (*n)->edges;
+    while (curr_e) {
+        pedge next_edge = curr_e->next;
+        free(curr_e);
+        curr_e = next_edge;
+    }
+}
+
 /**
  * Building a new graph by taking the head of the graph and the number of nodes in the graph that we
  * can allocate the exact memory that are needed to this nodes by their size.
@@ -15,6 +39,7 @@ void free_graph(pnode *head)
  */
 void build_graph_cmd(pnode *head, int num_of_nodes)
 {
+    printf("Starting to build the graph\n");
     int i;
     pnode ptrnode;
     pnode temp = *head;
@@ -37,15 +62,16 @@ void build_graph_cmd(pnode *head, int num_of_nodes)
             temp->next = ptrnode;
             temp = ptrnode;
         }
+        printf("finished building the graph\n");
         return;
     }
-
+    printf("finished building the graph\n");
 }
 
 void insert_node_cmd(pnode *head , int n)
 {
-    int to_link;
-    int weight;
+    int to_link = -1;
+    int weight = -1;
     pnode current = *head; // creating a new pointer and initialize it with the value of the head of the graph
     pnode prev = NULL; // while we traverse the list of nodes, prev will be used to keep track of the previous node we have been
 
@@ -106,20 +132,20 @@ void delete_node_cmd(pnode *head, int node_to_delete)
 
 void printGraph_cmd(pnode head)//for self debug
 {
-
+    return;
 }
 
 void deleteGraph_cmd(pnode *head)
 {
-
+    return;
 }
 
-void shortsPath_cmd(pnode head)
-{
-
-}
+//void shortsPath_cmd(pnode *head, int num_of_nodes, int src, int dest)
+//{
+//    int ans = 
+//}
 
 void TSP_cmd(pnode head)
 {
-
+    return;
 }

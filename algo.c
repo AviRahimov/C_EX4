@@ -1,6 +1,7 @@
 #include "algo.h"
 #include "nodes.h"
 #include "stdlib.h"
+#include <limits.h>
 
 pqueue createQueue() {
     pqueue queue = (pqueue)malloc(sizeof(queue));

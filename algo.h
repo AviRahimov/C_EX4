@@ -1,6 +1,7 @@
 #ifndef GRAPH_ALGO
 #define GRAPH_ALGO
 #include <stdbool.h>
+#include "nodes.h"
 
 typedef struct QUEUE {
     pnode vertex;
@@ -13,5 +14,5 @@ typedef struct QUEUE {
 void enqueue(pqueue *curr_queue, pnode vertex, int dist);
 pqueue createQueue();
 pqueue dequeue(pqueue* queue);
-int dijkstra(pnode graph, int numNodes, int start, int end);
+int dijkstra(pnode *graph, int numNodes, int start, int end);
 #endif

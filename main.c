@@ -1,5 +1,5 @@
 #include <stdio.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 #include "edges.h"
 #include "nodes.h"
 #include "algo.h"
@@ -7,22 +7,25 @@
 int main() {
     char input;
     int num_of_nodes = 0;
-    int *pgraph = 0;
+    pnode *pgraph = NULL;
+    printf("starting to scan:\n");
     while (scanf("%c", &input) != EOF) {
         switch (input) {
             case 'A': { // Creating a new graph
                 if (pgraph != NULL) {
-                    free_graph((pnode *) &pgraph);
+                    free_graph(&pgraph);
                 }
                 scanf("%d", &num_of_nodes);
                 build_graph_cmd((pnode *) &pgraph, num_of_nodes);
+                printf("finish input A\n");
                 break;
             }
             case 'n': { // Creating a new node
-                int start_node;
-                int weight;
-                int node_to_link;
-                int num;
+            printf("starting n input:\n");
+                int start_node = -1;
+                int weight = -1;
+                int node_to_link = -1;
+                int num = -1;
                 // after the 'n' sign the number of the source node will come, we set it as the start node.
                 scanf("%d", &start_node);
                 // run over all the nodes after the first node to connect the necessary nodes to the source
@@ -34,6 +37,7 @@ int main() {
                 }
                 break;
             }
+            printf("finish n input\n");
             case 'B': { // Adding a new node if not already exist in the graph
                 /* code */
                 break;
@@ -49,7 +53,8 @@ int main() {
                 int destination_node;
                 scanf("%d", &source_node);
                 scanf("%d", &destination_node);
-                dijkstra((pnode) &pgraph, num_of_nodes, source_node, destination_node);
+                int ans = dijkstra((pnode *) &pgraph, num_of_nodes, source_node, destination_node);
+                printf("Dijsktra shortest path %d", ans);
                 break;
             }
             case 'T': { // Calculate the shortest path between several vertices(nodes)
@@ -57,9 +62,11 @@ int main() {
                 break;
             }
 
-            default:
+            default:{
                 break;
+            }
         }
-        return 0;
     }
-}
+    printf("finished all functions");
+    return 0;
+}   
