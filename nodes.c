@@ -2,103 +2,53 @@
 #include <stdlib.h>
 #include "nodes.h"
 #include "edges.h"
+#include <limits.h>
 
-void free_graph(pnode *head)
-{
-    if(head == NULL){
+void insert_node_cmd(pnode * head, pnode item){
+    if (*head == NULL){
+        *head = item;
         return;
     }
-    pnode curr_node = *head;
-    while (curr_node)
-    {
-        pnode next_node = curr_node->next;
-        free_edges(&curr_node);
-        free(curr_node);
-        curr_node = next_node;
-    }
-    printf("finished the func\n");
-}
-void free_edges(pnode *n) {
-    if (n == NULL) {
+    
+    /* insert node item via node_id order 
+    3 scenrios:
+        1- item should be added as the new head of the list
+        2- item should be added somewhere in the middle of the list
+        3- item should be added as the last item of the list
+         */
+    // case 1:
+    if ((*head)->node_num > item->node_num){
+        item->next = *head;
+        *head = item;
         return;
     }
-    pedge curr_e = (*n)->edges;
-    while (curr_e) {
-        pedge next_edge = curr_e->next;
-        free(curr_e);
-        curr_e = next_edge;
-    }
-}
-
-/**
- * Building a new graph by taking the head of the graph and the number of nodes in the graph that we
- * can allocate the exact memory that are needed to this nodes by their size.
- * @param head the pointer to the first node of the graph
- * @param num_of_nodes the number of nodes in the graph
- */
-void build_graph_cmd(pnode *head, int num_of_nodes)
-{
-    int i;
-    pnode ptrnode;
-    pnode temp = *head;
-    for (i = 0; i < num_of_nodes; ++i) {
-        ptrnode = (pnode) malloc(sizeof(node));
-
-        if(ptrnode == NULL)
-        {
-            printf("The allocation was not succeed");
-            exit(0);
-        }
-        ptrnode->next = NULL;
-        ptrnode->node_num = i;
-        ptrnode->edges = NULL;
-        if (i == 0) {
-            *head = ptrnode;
-        }
-        else
-        {
-            temp->next = ptrnode;
-            temp = ptrnode;
-        }
+    if ((*head)->node_num == item->node_num){
         return;
     }
-
-}
-
-void insert_node_cmd(pnode *head , int n)
-{
-    int to_link = -1;
-    int weight = INT_MAX;
-    pnode current = *head; // creating a new pointer and initialize it with the value of the head of the graph
-    pnode prev = NULL; // while we traverse the list of nodes, prev will be used to keep track of the previous node we have been
-
-    while (current != NULL) { // traverse the list of nodes
-        if (current->node_num == n) { //check if the node we want to insert is already exists
-            printf("The Node %d is already exists. Delete all outgoing edges", n);
-            pedge e = current->edges;
-            while (e != NULL) {
-                pedge temp = e->next;
-                free(e); // deleting all the edges from the node that exist.
-                e = temp;
-            }
-            make_edge(head, n, to_link, weight);
-        } return;
-        //if the node does not exist
-        prev = current;
-        current = current->next;
+    
+    // init vars
+    pnode* p = head;
+    pnode next = (*p)->next;
+    
+    // case 2:
+    while(next){
+    // loop over all the node "linked list"
+        if(next->node_num== item->node_num){
+            return;
+        }
+        if(next->node_num > item->node_num){
+            (*p)->next = item;
+            item->next = next;
+            return;
+        }
+        next = next->next;
+        p = &((*p)->next);
     }
-    //if the node does not exist, create new node and add it to the graph
-    pnode newNode = (pnode)malloc(sizeof(node));
-    newNode->node_num = n;
-    newNode->edges = NULL;
-    newNode->next = NULL;
-    if(prev == NULL){
-        *head = newNode;
-    }
-    else{
-        prev->next = newNode;
-    }
-    printf("Node %d was inserted successfully.\n",n);
+    
+    // case 3:
+    (*p)->next = item;
+    item->next = NULL;
+    return;
 }
 
 void delete_node_cmd(pnode *head, int node_to_delete)
@@ -142,15 +92,27 @@ pnode get_node(pnode * head, int node_id){
     }
     p = (node*)malloc(sizeof(node));
     if (p == NULL){
-        deleteGraph_cmd(head);
+        free_graph(head);
         return NULL;
     }
     p->node_num = node_id;
-    insert_node_cmd(head, p->node_num);
+    insert_node_cmd(head, p);
     return p;
 }
+void free_edges(pedge *eHead){
+    /* loop over all the edges of specific node and delete them -> means, free those edges */
+    pedge toFreeEdge;
+    while (*eHead){
+        toFreeEdge = *eHead;
+        eHead = &((*eHead)->next);
+        free(toFreeEdge);
+    }
+    if (*eHead != NULL){
+        free(*eHead);
+    }
+}
 
-void deleteGraph_cmd(pnode* head){
+void free_graph(pnode* head){
     /* delete the whole graph, shall free every node and edge structs*/
     if (*head == NULL){
         return;
@@ -175,13 +137,22 @@ void deleteGraph_cmd(pnode* head){
     }
     return;
 }
-
-//void shortsPath_cmd(pnode head)
-//{
-//    shortest_path(head, src, dest);
-//}
-//
-//void TSP_cmd(pnode head)
-//{
-//    TSP(head, tspArr,)
-//}
+void printGraph_cmd(pnode head){
+    /*print graph, loop over the whole list of nodes, and print node_id then all its edges details*/
+    // init vars
+    pnode p = head;
+    pedge e;
+    while(p){
+        // loop over all the node "linked list"
+        e = p->edges;
+        printf("node id: %d out_edges: ",p->node_num);
+        //printf("node id: %d weight: ",p->.);
+        while(e){
+            // loop over all the edges of specific node
+            printf("(to %d, weight %d) ",e->endpoint->node_num, e->weight);
+            e = e->next;
+        }
+        p = p->next;
+        printf("\n");
+    }
+}

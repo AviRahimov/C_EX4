@@ -20,14 +20,9 @@ typedef struct GRAPH_NODE_ {
 
 pnode get_node(pnode * head, int node_id);
 void free_graph(pnode *head);
-void free_edges(pnode *n);
-void build_graph_cmd(pnode *head, int num_of_nodes);
-void insert_node_cmd(pnode *head, int n);
+void insert_node_cmd(pnode *head, pnode n);
 void delete_node_cmd(pnode *head, int node_to_delete);
 void printGraph_cmd(pnode head); //for self debug
-void deleteGraph_cmd(pnode* head);
-void shortsPath_cmd(pnode head);
-void TSP_cmd(pnode head);
-void free_edges(pnode *n);
+void free_edges(pedge *eHead);
 
 #endif
