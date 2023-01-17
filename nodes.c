@@ -5,8 +5,31 @@
 
 void free_graph(pnode *head)
 {
-
+    if(head == NULL){
+        return;
+    }
+    pnode curr_node = *head;
+    while (curr_node)
+    {
+        pnode next_node = curr_node->next;
+        free_edges(&curr_node);
+        free(curr_node);
+        curr_node = next_node;
+    }
+    printf("finished the func\n");
 }
+void free_edges(pnode *n) {
+    if (n == NULL) {
+        return;
+    }
+    pedge curr_e = (*n)->edges;
+    while (curr_e) {
+        pedge next_edge = curr_e->next;
+        free(curr_e);
+        curr_e = next_edge;
+    }
+}
+
 /**
  * Building a new graph by taking the head of the graph and the number of nodes in the graph that we
  * can allocate the exact memory that are needed to this nodes by their size.
@@ -44,8 +67,8 @@ void build_graph_cmd(pnode *head, int num_of_nodes)
 
 void insert_node_cmd(pnode *head , int n)
 {
-    int to_link;
-    int weight;
+    int to_link = -1;
+    int weight = INT_MAX;
     pnode current = *head; // creating a new pointer and initialize it with the value of the head of the graph
     pnode prev = NULL; // while we traverse the list of nodes, prev will be used to keep track of the previous node we have been
 
@@ -103,23 +126,62 @@ void delete_node_cmd(pnode *head, int node_to_delete)
     free(delete_node);
     return;
 }
+pnode get_node(pnode * head, int node_id){
+    /* if node_id is not exists: create new node and add it with insert function to the graph */
+    if (node_id < 0){
+        // invalid node_id number
+        return NULL;
+    }
 
-void printGraph_cmd(pnode head)//for self debug
-{
-
+    pnode p = *head;
+    while (p){
+        if (p->node_num == node_id){
+            return p;
+        }
+        p = p->next;
+    }
+    p = (node*)malloc(sizeof(node));
+    if (p == NULL){
+        deleteGraph_cmd(head);
+        return NULL;
+    }
+    p->node_num = node_id;
+    insert_node_cmd(head, p->node_num);
+    return p;
 }
 
-void deleteGraph_cmd(pnode *head)
-{
+void deleteGraph_cmd(pnode* head){
+    /* delete the whole graph, shall free every node and edge structs*/
+    if (*head == NULL){
+        return;
+    }
+    // init vars
+    pnode* p = head;
+    pedge e;
+    pnode toFreeNode;
+    // pedge toFreeEdge;
 
+    while(*p)
+        // loop over all the node "linked list"
+    {
+        toFreeNode = *p;
+        e = toFreeNode->edges;
+        if (e != NULL) {
+            free_edges((pnode*)&e);
+        }
+
+        p = &((*p)->next);
+        free(toFreeNode);
+    }
+    return;
 }
 
-void shortsPath_cmd(pnode head)
-{
-
-}
-
-void TSP_cmd(pnode head)
-{
-
-}
+//void shortsPath_cmd(pnode head)
+//{
+//    shortest_path(head, src, dest);
+//}
+//
+//void TSP_cmd(pnode head)
+//{
+//    TSP(head, tspArr,)
+//}
