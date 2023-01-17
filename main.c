@@ -13,7 +13,7 @@ int main() {
         switch (input) {
             case 'A': { // Creating a new graph
                 if (pgraph != NULL) {
-                    free_graph(&pgraph);
+                    free_graph(pgraph);
                 }
                 scanf("%d", &num_of_nodes);
                 build_graph_cmd((pnode *) &pgraph, num_of_nodes);
