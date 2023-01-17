@@ -91,12 +91,6 @@ int get_node_index(int size, int dists[size][size], int id){
 int dijkstra(int size, int dists[size][size], int len, int path[]){
     //calculate length of path
     int dist = 0;
-    // printf("path: ");
-    // for (int i = 0; i < len; i++)
-    // {
-    //     printf("%d,",path[i]);
-    // }
-    // putchar('\n');
     for (int i = 0; i < len-1; i++)
     {
         int src_i = get_node_index(size, dists, path[i]);
