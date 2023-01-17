@@ -19,6 +19,7 @@ typedef struct GRAPH_NODE_ {
 } node, *pnode;
 
 void free_graph(pnode *head);
+void free_edges(pnode *n);
 void build_graph_cmd(pnode *head, int num_of_nodes);
 void insert_node_cmd(pnode *head, int n);
 void delete_node_cmd(pnode *head, int node_to_delete);

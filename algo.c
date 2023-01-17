@@ -47,7 +47,7 @@ void freeQueue(pqueue queue) {
 int dijkstra(pnode *graph, int numNodes, int start, int end) {
     // Create a priority queue to store vertices that
     // are being preprocessed
-    pqueue queue = createQueue();
+    pqueue queue1 = createQueue();
 
     // Create an array to store the shortest distances
     // from the start vertex
@@ -60,11 +60,11 @@ int dijkstra(pnode *graph, int numNodes, int start, int end) {
     distances[start] = 0;
 
     // Insert the start vertex into the queue
-    enqueue(queue, &graph[start], 0);
+    enqueue(queue1, &graph[start], 0);
 
-    while (queue != NULL) {
+    while (queue1 != NULL) {
         // Extract the vertex with the minimum distance
-        pqueue min = dequeue(&queue);
+        pqueue min = dequeue(&queue1);
         pnode u = min->vertex;
         u->visited = 1;
 
@@ -87,7 +87,7 @@ int dijkstra(pnode *graph, int numNodes, int start, int end) {
 
                 // Enqueue the vertex v if it's not visited yet
                 if (!v->visited) {
-                    enqueue(queue, v, distances[v->node_num]);
+                    enqueue(queue1, v, distances[v->node_num]);
                 }
             }
             pCrawl = pCrawl->next;
@@ -95,7 +95,7 @@ int dijkstra(pnode *graph, int numNodes, int start, int end) {
     }
     int shortest_distance = distances[end];
     // release memory
-    free(distances);
-    freeQueue(queue);
+   // free(distances);
+   // freeQueue(queue1);
     return shortest_distance;
 }
