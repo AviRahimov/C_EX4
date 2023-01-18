@@ -20,6 +20,7 @@ typedef struct GRAPH_NODE_ {
 
 pnode get_node(pnode * head, int node_id);
 void free_graph(pnode *head);
+void build_graph_cmd(pnode *head);
 void insert_node_cmd(pnode *head, pnode n);
 void delete_node_cmd(pnode *head, int node_to_delete);
 void printGraph_cmd(pnode head); //for self debug

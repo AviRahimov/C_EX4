@@ -99,7 +99,7 @@ pnode get_node(pnode * head, int node_id){
     insert_node_cmd(head, p);
     return p;
 }
-void free_edges(pedge *eHead){
+void free_edges(pedge * eHead){
     /* loop over all the edges of specific node and delete them -> means, free those edges */
     pedge toFreeEdge;
     while (*eHead){
@@ -129,11 +129,17 @@ void free_graph(pnode* head){
         toFreeNode = *p;
         e = toFreeNode->edges;
         if (e != NULL) {
-            free_edges((pnode*)&e);
+            free_edges(&e);
         }
 
         p = &((*p)->next);
         free(toFreeNode);
+    }
+    return;
+}
+void build_graph_cmd(pnode *head){
+    if(*head){
+        free_graph(&head[0]);
     }
     return;
 }

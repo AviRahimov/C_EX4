@@ -1,6 +1,5 @@
 #ifndef GRAPH_ALGO
 #define GRAPH_ALGO
-#include <stdbool.h>
 #include "nodes.h"
 
 // Algorithms:
