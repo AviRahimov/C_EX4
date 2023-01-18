@@ -27,7 +27,7 @@ int main() {
                 //char n;
                 //scanf("%s", &n);
                 for (int i = 0; i < vertex; ++i) {
-                    int src_id;
+                    int src_id = 0;
                     scanf("%d", &src_id);
                     pnode node_data;//maybe not good declaration.
                     if (i == 0) {
@@ -54,11 +54,11 @@ int main() {
                     } else {
                         node_data = checker;
                     }
-                    int dest;
+                    int dest = 0;
                     while (scanf("%d", &dest)) {
                         
                         pedge edge_data = NULL;
-                        int weight;
+                        int weight = 0;
                         scanf("%d", &weight);
                         pnode destination = head;
                         while (destination) { // creating dest node if doesn't exist
