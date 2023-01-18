@@ -18,4 +18,4 @@ main.o: main.c edges.h nodes.h algo.h
 	$(CC) $(CFLAGS) -c main.c
 
 clean:
-	rm -f graph *.o my_out1
+	rm -f graph *.o

@@ -59,7 +59,7 @@ int shortest_path(pnode head, int src, int dest){
         }
         if(min_node_id != -1){
             curr_node = get_node(&head, min_node_id);
-            pedge e= curr_node -> edges;
+            pedge e = curr_node -> edges;
             //ease edges
             while(e){
                 //condition: the end node is unseen, or seen (not visited) and has bigger distance than dist+weight

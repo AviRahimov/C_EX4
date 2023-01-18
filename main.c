@@ -6,60 +6,50 @@
 
 int main() {
     char input;
-    int num_of_nodes = 0;
-    pnode *pgraph = NULL;
-    printf("starting to scan:\n");
+    int num_of_nodes, index, node_id;
+    int weight, dest_node;
+    pnode pgraph = NULL;
+    pnode n = NULL;
     int num = 0;
     while (scanf("%c", &input) != EOF) {
         switch (input) {
             case 'A': { // Creating a new graph
-                if (pgraph != NULL) {
-                    free_graph(pgraph);
+                if (pgraph != NULL){
+                    free_graph(&pgraph);
+                    pgraph = NULL;
                 }
-                scanf("%d", &num_of_nodes);
-                build_graph_cmd((pnode *) &pgraph, num_of_nodes);
-                printf("finish input A\n");
-                break;
-            }
-            case 'n': { // Creating a new node
-            printf("starting n input:\n");
-                int start_node = -1;
-                int weight = -1;
-                int node_to_link = -1;
-                int i = -1;
-                // after the 'n' sign the number of the source node will come, we set it as the start node.
-                scanf("%d", &start_node);
-                // run over all the nodes after the first node to connect the necessary nodes to the source
-                // node and put the right weight for each edge.
-                while (scanf("%d", &i)) {
-                   // node_to_link = i;
-                   // scanf("%d", &weight);
-                   // make_edge((pnode *) &pgraph, start_node, node_to_link, weight);
-                   if(start_node != -1 && node_to_link == -1 && weight == -1){
-                    node_to_link = i;
-                   }
-                   else if(start_node != -1 && node_to_link != -1 && weight == -1){
-                    weight = i;
-                   }
-                   if(start_node != -1 && node_to_link == -1 && weight != -1){
-                    make_edge((pnode *) &pgraph, start_node, node_to_link, weight);
-                    node_to_link = -1;
-                    weight = -1;
-                   }
+                scanf("%d ",&num_of_nodes);
+                index = 0;
+                while(index < num_of_nodes){
+                scanf("%c ",&input);
+                scanf("%d ",&node_id); // start of new node
+                n = (pnode)malloc(sizeof(node));
+                if (n == NULL){
+                    free_graph(&pgraph);
+                    return -1;
                 }
-                break;
+                n->node_num = node_id;
+                insert_node_cmd(&pgraph, n); // add node to the linked list of nodes 
+                // e = n->edges; // add the edges now.
+                while (scanf("%d ",&dest_node) == 1){
+                    scanf("%d ",&weight);
+                    make_edge(&pgraph, n->node_num, dest_node, weight);
+                }
+                index++;
+                n = NULL;
             }
-            printf("finish n input\n");
+            break;
+            }
             case 'B': { // Adding a new node if not already exist in the graph
                 int node_to_insert;
                 scanf("%d", &node_to_insert);
-                insert_node_cmd((pnode *) &pgraph, node_to_insert);
+                insert_node_cmd(&pgraph, node_to_insert);
                 break;
             }
             case 'D': { // Removing a node
                 int node_to_delete;
                 scanf("%d", &node_to_delete);
-                delete_node_cmd((pnode *) &pgraph, node_to_delete);
+                delete_node_cmd(&pgraph, node_to_delete);
                 break;
             }
             case 'S': { // Returning the shortest path between two number
@@ -67,8 +57,8 @@ int main() {
                 int destination_node;
                 scanf("%d", &source_node);
                 scanf("%d", &destination_node);
-                int ans = shortest_path((pnode) &pgraph, num_of_nodes, source_node);
-                printf("dijkstra shortest path %d\n", ans);
+                int ans = shortest_path(pgraph, source_node, destination_node);
+                printf("Dijkstra shortest path %d\n", ans);
                 break;
             }
             case 'T': { // Calculate the shortest path between several vertices(nodes)
@@ -76,7 +66,7 @@ int main() {
                 scanf("%d ",&size);
                 int * arr = (int*)malloc(size*sizeof(int));
                 if (arr == NULL){
-                    deleteGraph_cmd((pnode *) &pgraph);
+                    free_graph(&pgraph);
                     return -1;
                 }
                 int i = 0;
@@ -85,7 +75,7 @@ int main() {
                     arr[i] = num;
                     i++;
                 }
-                printf("TSP shortest path: %d \n",TSP((pnode) pgraph, &arr[0], i));
+                printf("TSP shortest path: %d \n",TSP(pgraph, &arr[0], i));
                 free(arr);
                break;
             }
@@ -95,6 +85,5 @@ int main() {
             }
         }
     }
-    printf("finished all functions\n");
     return 0;
 }   
