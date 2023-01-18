@@ -2,7 +2,7 @@
 #include "nodes.h"
 #include <stdlib.h>
 
-pedge create_edge(int weight, pnode end) {
+pedge make_edge(int weight, pnode end) {
     pedge a = (pedge) malloc(sizeof(edge));
     if (!a) {
         return NULL;

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-pnode create_node(int id) {
+pnode make_node(int id) {
     pnode a = (pnode) malloc(sizeof(node));
     if (!a) {
         return NULL;

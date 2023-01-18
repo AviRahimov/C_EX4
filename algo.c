@@ -57,7 +57,7 @@ int dijkstra(pnode* head , int src , int dest , int bool){
             }
             temp=temp->next;
         }
-        //in each iteration we will hold an edge coming out of temp and the node at the end of that edge\
+        //in each iteration we will hold an edge coming out of temp and the node at the end of that edge
         //meaning the node which is temps neighbor
         pedge edge_of_neighbor = temp->edges;
         while(edge_of_neighbor){
@@ -130,7 +130,7 @@ void per(pnode *head, int *values, int right, int left ,int *permute, int *n){
     }
 }
 
-void tsp(pnode *head){
+void TSP(pnode *head){
     int NumberOfNodes = 0;
     scanf("%d", &NumberOfNodes);
     int values[NumberOfNodes];

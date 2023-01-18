@@ -3,13 +3,14 @@
 #include "algo.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 int main() {
     int vertex = 0;
     int FLAG = 1;
     node *head = NULL;
     int c =0;
-    int first =1;
+    int first = 1;
     while (FLAG) {
         if(first) {
             c = getchar();
@@ -23,8 +24,8 @@ int main() {
                     removi = head;
                 }
                 scanf("%d", &vertex); // vertex graph.
-                char n;
-                scanf("%s", &n);
+                //char n;
+                //scanf("%s", &n);
                 for (int i = 0; i < vertex; ++i) {
                     int src_id;
                     scanf("%d", &src_id);
@@ -55,6 +56,7 @@ int main() {
                     }
                     int dest;
                     while (scanf("%d", &dest)) {
+                        
                         pedge edge_data = NULL;
                         int weight;
                         scanf("%d", &weight);
@@ -104,7 +106,10 @@ int main() {
                         break;
                     }
                 }
+                getchar();
+                getchar();
                 break;
+        
             case 'B':
                 getchar();//for the space
                 int to_add;
@@ -112,6 +117,7 @@ int main() {
                 insert_node_cmd(&head, to_add);
                 first=1;
                 break;
+            
             case 'D':
                 getchar();
                 int node_to_remove;
@@ -119,25 +125,28 @@ int main() {
                 remove_node(&head, node_to_remove);
                 first=1;
                 break;
+            
             case 'S':
                 getchar();
                 int dest, src;
                 scanf("%d %d", &src, &dest);
-                printf("Dijkstra shortest path: ");
+                printf("Dijsktra shortest path: ");
                 dijkstra(&head, src, dest, 1);//maybe send without head since in debugger it shows 2 heads
                 first=1;
                 break;
+            
             case 'T':
                 getchar();
                 TSP(&head);
                 first=1;
                 break;
+            
             case ' ':
                 break;
             default:
-                // printGraph(head);
                 FLAG = 0;
                 break;
+            
         }
     }
     pnode removie = head;
