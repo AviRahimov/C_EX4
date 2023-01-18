@@ -98,7 +98,6 @@ int main(){
     int num;
     pnode head = NULL;
     pnode n = NULL;
-    // pedge e, tempE;
     
     for(;scanf("%c ",&chr)!=EOF;){
         if (chr == 'A'){ // case A create whole graph (linked list of nodes and ea node hold list of edges)
@@ -121,7 +120,7 @@ int main(){
                 // e = n->edges; // add the edges now.
                 while (scanf("%d ",&dest_node) == 1){
                     scanf("%d ",&weight);
-                    make_edge(&head, n->node_num, weight, dest_node);
+                    make_edge(&head, n->node_num, dest_node, weight);
                 }
                 idx++;
                 n = NULL;
@@ -138,7 +137,7 @@ int main(){
                 }
                 while (scanf("%d ",&dest_node) == 1){
                     scanf("%d ",&weight);
-                    make_edge(&head, n->node_num, weight, dest_node);
+                    make_edge(&head, n->node_num, dest_node, weight);
                 }
                 n = NULL;
             }
@@ -170,7 +169,6 @@ int main(){
             printf("TSP shortest path: %d \n",TSP(head, &arr[0], i));
             free(arr);
         }
-        // printGraph_cmd(head);
     }
     if (head != NULL){
         free_graph(&head);

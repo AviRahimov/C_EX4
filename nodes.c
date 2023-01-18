@@ -51,31 +51,67 @@ void insert_node_cmd(pnode * head, pnode item){
     return;
 }
 
-void delete_node_cmd(pnode *head, int node_to_delete)
-{
-    pnode delete_node = (*head), temp = (*head);
-    pedge temp_edge;
-    while (delete_node->node_num != node_to_delete){
-        delete_node = delete_node->next;
+void delete_node_cmd(pnode * head, int node_id){
+    /*
+    stages:
+        1- find the node along the list
+        2- remove(and free) all his IN_EDGES from the other nodes (they OUT_EDGES at the other nodes)
+        3- remove(and free) the node and his outEdges
+    */
+    // stage 1:
+    pnode node_to_del;
+    pnode p = *head;
+    if (p->node_num == node_id){ // node to delete is first in the linked list
+        node_to_del = p;
+        *head = p->next;
     }
-    // Traveling over the whole graph
-    while (temp != NULL){
-        temp_edge = temp->edges;
-        while (temp_edge->endpoint != delete_node && temp_edge->endpoint != NULL){
-            temp_edge = temp_edge->next;
+    else { // not the first -> shall loop over the list and get it.
+        pnode prevNode;   
+        while (p != NULL){
+            prevNode = p;
+            if(p->next->node_num == node_id){
+                node_to_del = p->next; // save the node we gonna delete
+                prevNode->next = node_to_del->next;  // change his prevNode.next to point on the next of the delete_node
+                break;
+            }   
+            p = p->next;
         }
-        free(temp_edge);
-        temp = temp->next;
     }
-    pedge pnode_to_delete = delete_node->edges;
-    while(delete_node->edges != NULL){
-        free(pnode_to_delete);
-        pnode_to_delete = delete_node->edges->next;
-        delete_node->edges = delete_node->edges->next;
+    // stage 2:
+    p = *head;
+    pedge eHead = (pedge)malloc(sizeof(pedge));
+    pedge toDeleteEdge;
+    while (p != NULL){
+        pedge eHead = p->edges;
+        /* loop over all the edges of specific node and delete them -> means, free those edges */
+        if (eHead != NULL && eHead->endpoint->node_num == node_id){
+            toDeleteEdge = eHead;
+            eHead = eHead->next;
+            free(toDeleteEdge);
+            p->edges = eHead;
+            eHead = NULL; // found the relevant edge to remove and deleted it.
+        }
+        while (eHead != NULL){
+            pedge prev;
+            prev = eHead;
+            if (eHead->next != NULL && eHead->next->endpoint->node_num == node_id){
+                toDeleteEdge = eHead->next;
+                prev->next = toDeleteEdge->next;
+                free(toDeleteEdge);
+                eHead = NULL; // found the relevant edge to remove and deleted it.
+            }
+            else {
+                eHead = eHead->next;
+            }
+        }    
+        p = p->next;
     }
-    free(delete_node);
-    return;
+    free(eHead);
+    // stage 3:
+    free_edges(&(node_to_del->edges));
+    free(node_to_del);           
 }
+
 pnode get_node(pnode * head, int node_id){
     /* if node_id is not exists: create new node and add it with insert function to the graph */
     if (node_id < 0){
