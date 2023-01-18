@@ -1,21 +1,18 @@
 CC = gcc
-CFLAGS = -g -Wall
-OBJECTS = main.o algo.o nodes.o edges.o
+CFlags = -Wall -g
 
-all: $(OBJECTS)
-	$(CC) $(CFLAGS) -o graph $(OBJECTS)
+all: graph
 
-algo.o: algo.c algo.h
-	$(CC) $(CFLAGS) -c algo.c
+graph : main.o algo.o
+	$(CC) $(CFlags) main.o algo.o -o graph
 
-nodes.o: nodes.c nodes.h
-	$(CC) $(CFLAGS) -c nodes.c
+algo.o : algo.c nodes.h
+	$(CC) $(CFlags) -c algo.c
 
-edges.o: edges.c edges.h
-	$(CC) $(CFLAGS) -c edges.c
+main.o : main.c nodes.h
+	$(CC) $(CFlags) -c main.c
 
-main.o: main.c edges.h nodes.h algo.h
-	$(CC) $(CFLAGS) -c main.c
+.PHONY:clean all
 
 clean:
-	rm -f graph *.o
+	rm -f *.o graph

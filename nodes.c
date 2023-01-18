@@ -1,164 +1,133 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "nodes.h"
 #include "edges.h"
-#include <limits.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-void insert_node_cmd(pnode * head, pnode item){
-    if (*head == NULL){
-        *head = item;
-        return;
-    }
-    
-    /* insert node item via node_id order 
-    3 scenrios:
-        1- item should be added as the new head of the list
-        2- item should be added somewhere in the middle of the list
-        3- item should be added as the last item of the list
-         */
-    // case 1:
-    if ((*head)->node_num > item->node_num){
-        item->next = *head;
-        *head = item;
-        return;
-    }
-    if ((*head)->node_num == item->node_num){
-        return;
-    }
-    
-    // init vars
-    pnode* p = head;
-    pnode next = (*p)->next;
-    
-    // case 2:
-    while(next){
-    // loop over all the node "linked list"
-        if(next->node_num== item->node_num){
-            return;
-        }
-        if(next->node_num > item->node_num){
-            (*p)->next = item;
-            item->next = next;
-            return;
-        }
-        next = next->next;
-        p = &((*p)->next);
-    }
-    
-    // case 3:
-    (*p)->next = item;
-    item->next = NULL;
-    return;
-}
-
-void delete_node_cmd(pnode *head, int node_to_delete)
-{
-    pnode delete_node = (*head), temp = (*head);
-    pedge temp_edge;
-    while (delete_node->node_num != node_to_delete){
-        delete_node = delete_node->next;
-    }
-    // Traveling over the whole graph
-    while (temp != NULL){
-        temp_edge = temp->edges;
-        while (temp_edge->endpoint != delete_node && temp_edge->endpoint != NULL){
-            temp_edge = temp_edge->next;
-        }
-        free(temp_edge);
-        temp = temp->next;
-    }
-    pedge pnode_to_delete = delete_node->edges;
-    while(delete_node->edges != NULL){
-        free(pnode_to_delete);
-        pnode_to_delete = delete_node->edges->next;
-        delete_node->edges = delete_node->edges->next;
-    }
-    free(delete_node);
-    return;
-}
-pnode get_node(pnode * head, int node_id){
-    /* if node_id is not exists: create new node and add it with insert function to the graph */
-    if (node_id < 0){
-        // invalid node_id number
+pnode create_node(int id) {
+    pnode a = (pnode) malloc(sizeof(node));
+    if (!a) {
         return NULL;
     }
-
-    pnode p = *head;
-    while (p){
-        if (p->node_num == node_id){
-            return p;
-        }
-        p = p->next;
-    }
-    p = (node*)malloc(sizeof(node));
-    if (p == NULL){
-        free_graph(head);
-        return NULL;
-    }
-    p->node_num = node_id;
-    insert_node_cmd(head, p);
-    return p;
-}
-void free_edges(pedge * eHead){
-    /* loop over all the edges of specific node and delete them -> means, free those edges */
-    pedge toFreeEdge;
-    while (*eHead){
-        toFreeEdge = *eHead;
-        eHead = &((*eHead)->next);
-        free(toFreeEdge);
-    }
-    if (*eHead != NULL){
-        free(*eHead);
-    }
+    a->node_num = id;
+    a->edges = NULL;
+    a->next = NULL;
+    return a;
 }
 
-void free_graph(pnode* head){
-    /* delete the whole graph, shall free every node and edge structs*/
-    if (*head == NULL){
+void remove_node(pnode *head, int node_to_remove) {
+    if (!(*head)) {
         return;
     }
-    // init vars
-    pnode* p = head;
-    pedge e;
-    pnode toFreeNode;
-    // pedge toFreeEdge;
-
-    while(*p)
-        // loop over all the node "linked list"
-    {
-        toFreeNode = *p;
-        e = toFreeNode->edges;
-        if (e != NULL) {
-            free_edges(&e);
+    if ((*head)->node_num == node_to_remove) {
+        pnode temp = *head;
+        if (!(temp->next)) { //this is the case for which there is only one node in the linked list and I wish to remove it.
+            remove_all_edges(temp, head);
+            *head = (*head)->next; //im only changing the head here so, I can call the remove edge function with the original head
+            free(temp);
+            *head = NULL;
+            return;
         }
-
-        p = &((*p)->next);
-        free(toFreeNode);
-    }
-    return;
-}
-void build_graph_cmd(pnode *head){
-    if(*head){
-        free_graph(&head[0]);
-    }
-    return;
-}
-void printGraph_cmd(pnode head){
-    /*print graph, loop over the whole list of nodes, and print node_id then all its edges details*/
-    // init vars
-    pnode p = head;
-    pedge e;
-    while(p){
-        // loop over all the node "linked list"
-        e = p->edges;
-        printf("node id: %d out_edges: ",p->node_num);
-        //printf("node id: %d weight: ",p->.);
-        while(e){
-            // loop over all the edges of specific node
-            printf("(to %d, weight %d) ",e->endpoint->node_num, e->weight);
-            e = e->next;
+        remove_all_edges(temp, head);
+        *head = (*head)->next;//im only changing the head here so, I can call the remove edge function with the original head
+        free(temp);
+        return;
+    } else {
+        pnode temp = *head;
+        while (temp->next) {
+            if (temp->next->node_num == node_to_remove) {
+                pnode temp2 = temp->next;
+                remove_all_edges(temp2, head);
+                temp->next = temp->next->next;
+                free(temp2);
+                return;
+            }
+            temp = temp->next;
         }
-        p = p->next;
-        printf("\n");
+    }
+}
+
+//A 4 n 0 2 5 3 3 n 2 0 4 1 1 n 1 3 7 0 2 n 3 T 3 2 1 3 S 2 0
+
+void insert_node_cmd(pnode *head, int id_of_node_to_add) {
+    pnode node_data;
+    if (!*head) { //need to check here if its *head or head
+        *head = make_node(id_of_node_to_add);
+    }
+    pnode check = *head;
+    int flag = 1;
+    while (check) { // creating dest node if docent exist
+        if (check->node_num == id_of_node_to_add) {
+            if ((check->edges)) { //only if there is an edge
+                pedge temp = check->edges;
+                while (temp->next) {
+                    remove_edge(&(temp->next), temp->next->endpoint->node_num);
+                }
+                remove_edge(&temp,
+                           temp->endpoint->node_num);//big problem here for some reason not freeing the edge only freeing inside the function not working out of it
+                check->edges = NULL;
+            }
+            flag = 0;
+            break;
+        }
+        check = check->next;
+    }
+    if (flag) {
+        node_data = make_node(id_of_node_to_add);
+        if (!node_data) {
+            exit(0);
+        }
+        pnode temp4 = *head;
+        while (temp4->next) {
+            temp4 = temp4->next;
+        }
+        temp4->next = node_data;
+    } else {
+        node_data = check;
+    }
+    int dest;
+    while (scanf("%d", &dest)) {
+        pedge edge_data = NULL;
+        int weight;
+        scanf("%d", &weight);
+        pnode pnod1 = *head;
+        int flag2 = 0;
+        while (pnod1) { // creating dest node if doesn't exist
+            if (pnod1->node_num == dest) {
+                flag2 = 1;
+                break;
+            }
+            pnod1 = pnod1->next;
+        }
+        if (flag2) { // problem here.
+            edge_data = make_edge(weight, pnod1);
+            if (!edge_data) {
+                exit(0);
+            }
+        } else {
+            //need to create the endpoint node and create the edge with it
+            pnod1 = make_node(dest);
+            if (!pnod1) {
+                exit(0);
+            } else {
+                pnode temp = *head;
+                while (temp->next) {
+                    temp = temp->next;
+                }
+                temp->next = pnod1;
+            }
+            edge_data = make_edge(weight, pnod1);
+            if (!edge_data) {
+                exit(0);
+            }
+        }
+        pedge temp = node_data->edges;
+        if (!temp) {
+            node_data->edges = edge_data;
+        } else {
+            while (temp->next) {
+                temp = temp->next;
+            }
+            temp->next = edge_data;
+        }
     }
 }

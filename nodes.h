@@ -18,12 +18,10 @@ typedef struct GRAPH_NODE_ {
     struct GRAPH_NODE_ *next;
 } node, *pnode;
 
-pnode get_node(pnode * head, int node_id);
-void free_graph(pnode *head);
-void build_graph_cmd(pnode *head);
-void insert_node_cmd(pnode *head, pnode n);
-void delete_node_cmd(pnode *head, int node_to_delete);
-void printGraph_cmd(pnode head); //for self debug
-void free_edges(pedge *eHead);
+
+void clean(int **ShortestPath,int size);
+pnode make_node(int id);
+void remove_node(pnode *head, int node_to_remove);
+void insert_node_cmd(pnode *head, int num_of_node);
 
 #endif

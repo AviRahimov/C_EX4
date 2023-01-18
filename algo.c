@@ -1,175 +1,150 @@
+#include <stdio.h>
 #include <stdlib.h>
-#include "nodes.h"
 #include <limits.h>
+#include "nodes.h"
 
-/**
- * @brief set all nodes distances to 'inf' except the src node which will be 0
- *
- * @param head
- * @param src
- */
-void initiate_nodes(pnode head, int src){
-    // distance holds the minimal distance from src, initially -1.
-    // visited describes state of node i dijkstra process: 0- dist is -1, 1- seen but not visited, 2- visited.
+//first I wish to create an array to represent our graph so find max node num to create it
 
-    pnode curr = head;
-    while(curr){
-        curr->distance = -1;
-        curr->visited = 0;
-        curr = curr->next;
+int dijkstra(pnode* head , int src , int dest , int bool){
+    int max = INT_MIN;
+    pnode temp = *head;
+    while(temp){
+        if(temp->node_num >max){
+            max= (temp->node_num);
+        }
+        temp = temp->next;
     }
-    curr = get_node(&head, src);
-    curr -> distance = 0;
-    curr -> visited = 1;
-}
-
-void print_status(pnode head){//for debug help
-    // printf("***\n");
-    while(head){
-        // printf("dist of node %d: %d\n",head->node_id, head->dist);
-        // printf("state of node %d: %d\n",head->node_id, head->state);
-        head = head->next;
+    int *Queue = (int*) malloc(sizeof (int) * (max+1));
+    int *dist = (int*) malloc(sizeof (int) * (max+1));
+    if((!Queue) || (!dist)){
+        return -1;
     }
-    //printf("***\n");
-}
+    temp = *head;
+    for (int i = 0; i <max+1 ; ++i) {
+        dist[i] = INT_MAX;
+        Queue[i] = -1;//want to make sure when I add nodes whichever index doesn't hold a node will be -1
+    }
+    dist[src]=0;
 
-int shortest_path(pnode head, int src, int dest){
-    //set all distances to -1, state to 0 (unseen).
-    //set src dist to 0 and state to 1, update neighbors distance and insert his neighbors to list
-    //  {run over list, take minimal distance node as current
-    //  update distance to neighbors, add them to list. set current to visited.}
-    //repeat until list is empty
-    pnode dest_pnode = get_node(&head, dest);
-    pnode curr_node = head;
-    initiate_nodes(head, src);
-    int min_node_id = 0;
-    while(min_node_id != -1){//stop if no relevant node was found
-        // print_status(head);  // debug print
-        min_node_id = -1;
-        curr_node = head;
-        int min_dist = -1;
-        while(curr_node){
-            if(curr_node->visited == 1){
-                if(min_dist == -1 || min_dist > curr_node -> distance){
-                    min_node_id = curr_node ->node_num;
-                    min_dist = curr_node->distance;
+    while(temp){//filling queue with nodes
+        int index = temp->node_num;
+        Queue[index]=1;
+        temp = temp->next;
+    }
+
+    while(1){
+        //the next 8 rows of code is my way to check if queue is empty
+        int min = INT_MAX;
+        int curr_node_id = -1;
+        for (int i = 0; i <max+1; ++i) {
+            if(Queue[i]==1){//only if queue[i] is 1 then that i node exits and, we can
+                if(dist[i]<min){
+                    min = dist[i];
+                    curr_node_id = i;//if it's the min distance then I will work on this node
                 }
             }
-            curr_node = curr_node->next;
         }
-        if(min_node_id != -1){
-            curr_node = get_node(&head, min_node_id);
-            pedge e = curr_node -> edges;
-            //ease edges
-            while(e){
-                //condition: the end node is unseen, or seen (not visited) and has bigger distance than dist+weight
-                if(e->endpoint->visited==0 || (e->endpoint->visited==1 && (curr_node->distance + e->weight) < e->endpoint -> distance)){
-                    e->endpoint->visited = 1;
-                    e->endpoint -> distance = curr_node->distance + e->weight;
-                }
-                e = e->next;
+        if(min==INT_MAX){
+            break;
+        }
+        Queue[curr_node_id]=-1; //remove node from queue
+        temp= *head;
+        //This next loop will find the node we want to work on and temp will hold that node.
+        //once we found that node we break and iterate over temps neighbors which are still in Queue
+        while(temp){
+            if(temp->node_num==curr_node_id){
+                break;
             }
-            curr_node -> visited = 2;
+            temp=temp->next;
+        }
+        //in each iteration we will hold an edge coming out of temp and the node at the end of that edge\
+        //meaning the node which is temps neighbor
+        pedge edge_of_neighbor = temp->edges;
+        while(edge_of_neighbor){
+            int neighbors_id = edge_of_neighbor->endpoint->node_num;
+            int alternative = dist[curr_node_id]+ (edge_of_neighbor->weight);
+            if(alternative<dist[neighbors_id]){
+                dist[neighbors_id]= alternative;
+            }
+            edge_of_neighbor = edge_of_neighbor->next;
         }
     }
-
-    return dest_pnode -> distance;
-    //how to improve efficient data structure to keep relevant nodes (state 1)
-}
-
-int get_node_index(int size, int dists[size][size], int id){
-    for (int i = 0; i < size; i++)
-    {
-        if(dists[0][i+1] == id){
-            return i+1;
+    if(bool){
+        if(dist[dest]!=INT_MAX){
+            printf("%d \n" , dist[dest]);
+        }
+        else{
+            int a = -1;
+            printf("%d \n" , a);
         }
     }
-    return -1;
-
+    free(Queue);
+    int ret = dist[dest];
+    free(dist);
+    return  ret;
 }
 
-int dijkstra(int size, int dists[size][size], int len, int path[]){
-    //calculate length of path
+void swap(int *x, int *y) {
+    int c;
+    c = *x;
+    *x = *y;
+    *y = c;
+}
+
+
+int factorial(int size){
+    if(size < 0) return 0;
+    if(size == 0) return 1;
+    return factorial(size-1)*size;
+}
+int arrayc(pnode * head,int values[], int size){
     int dist = 0;
-    for (int i = 0; i < len-1; i++)
-    {
-        int src_i = get_node_index(size, dists, path[i]);
-        int dest_i = get_node_index(size, dists, path[i+1]);
-        // printf("index of %d: %d\n",path[i],src_i);
-        // printf("index of %d: %d\n",path[i+1],dest_i);
-        int temp_dist = dists[src_i][dest_i];
-        // printf("dist from 0 to 1: %d\n",dists[1][2]);
-        // printf("dist from %d to %d: %d\n",path[i],path[i+1],temp_dist);
-        if(temp_dist == -1){//impossible path
+    for (int i = 0; i < size-1; ++i) {
+        int dijk = dijkstra(head,values[i],values[i+1],0);
+        if(dijk == INT_MAX){
             return INT_MAX;
         }
-        dist += temp_dist;
+        dist += dijk;
     }
-    // printf("path distance: %d\n", dist);
     return dist;
 }
 
-
-int recursive_TSP(int size, int dists[size][size], int *path, int len1, int *nodes, int len2){
-
-    if(len2 == 0){
-        return dijkstra(size, dists, len1, path);
+int min(const int arr[],int n){
+    int index = 0;
+    for (int i = 1; i <n; ++i) {
+        if(arr[i]<arr[index]){index = i;}
     }
-    int min_dist = INT_MAX;
-    for (int i = 0; i < len2; i++){
-        path[len1] = nodes[i];//extend path by 1 node
-        int new_nodes[len2-1], c=0;
-        for(int j = 0; j<len2; j++ ){//create new list of spare nodes (node that are not part of the path)
-            if(j!=i){
-                new_nodes[c] = nodes[j];
-                c++;
-            }
-        }
-        int curr_dist = recursive_TSP(size, dists, path, len1+1, new_nodes, len2-1);
-        if(curr_dist != -1 && min_dist > curr_dist){
-            min_dist = curr_dist;
-        }
-    }
-    return min_dist;
+    return index;
 }
 
 
-int TSP(pnode head, int * tspArr, int size){
-    // create dists matrix (compute pairs distance, first row is nodes id)
-    int dists[size+1][size+1];
-    dists[0][0] = -1;
-    for (int i = 0; i < size; i++)
-    {
-        //set rows and columns to node_id
-        dists[0][i+1] = tspArr[i];
-        dists[i+1][0] = tspArr[i];
+void per(pnode *head, int *values, int right, int left ,int *permute, int *n){
+    if(right == left){
+        permute[(*n)++] = arrayc(head, values, left+1);
+        return;
     }
-    //fill the matrix
-    for (int i = 0; i < size; i++)
-    {
-        for (int j = 0; j < size; j++)
-        {
-            dists[i+1][j+1] = shortest_path(head, tspArr[i], tspArr[j]);
-        }
+    for (int i = right; i <=left; ++i) {
+        swap((values + i), (values + right));
+        per(head,values,right+1,left,permute,n);
+        swap((values+i),(values+right));
+    }
+}
 
+void tsp(pnode *head){
+    int NumberOfNodes = 0;
+    scanf("%d", &NumberOfNodes);
+    int values[NumberOfNodes];
+    for (int i = 0; i < NumberOfNodes; ++i) {
+        scanf("%d", &values[i]);
     }
-    //debug print matrix
-    // printf("dist matrix:\n");
-    for (int i = 0; i < size+1; i++)
-    {
-        for (int j = 0; j < size+1; j++)
-        {
-            // printf("%d,",dists[i][j]);
-        }
-        // putchar('\n');
+    int f = factorial(NumberOfNodes);
+    int permutations[f];
+    int temp = 0;
+    per(head,values,0,NumberOfNodes-1,permutations,&temp);
+    int n = min(permutations,f);
+    if(permutations[n] == INT_MAX){
+        printf("TSP shortest path: %d \n",-1);
+    }else{
+        printf("TSP shortest path: %d \n",permutations[n]);
     }
-    // printf("dist from 0 to 1: %d\n",dists[1][2]);
-    int *path = (int *)malloc(size*sizeof(int));
-    int min_dist = recursive_TSP(size+1, dists, path, 0, tspArr, size);
-    free(path);
-    // run rec_TSP
-    if(min_dist == INT_MAX){
-        return -1;
-    }
-    return min_dist;
 }
